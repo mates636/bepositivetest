@@ -1,0 +1,31 @@
+<h1>Registrace</h1>
+{control registrationForm}
+<table border="1">
+	<tr>
+		<th>Name</th>
+		<th>Password</th>
+
+		<th>ID</th>
+		<th>Role</th>
+	</tr>
+	{foreach $users as $user}
+		<tr>
+			<td>
+				{$user->getUsername()}<br>
+			</td>
+			<td>
+				{$user->getPasswordHash()}<br>
+			</td>
+			<td>
+				{$user->getId()}<br>
+			</td>
+			<td>
+				{$user->getRole()}<br>
+		</tr>
+	{/foreach}
+</table>
+
+
+
+
+

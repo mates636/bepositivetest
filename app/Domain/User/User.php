@@ -8,6 +8,7 @@ use App\Model\Database\Entity\TId;
 use App\Model\Database\Entity\TUpdatedAt;
 use App\Model\Exception\Logic\InvalidArgumentException;
 use App\Model\Security\Identity;
+use App\Domain\Order\Order;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -32,6 +33,9 @@ class User extends AbstractEntity
 
 	public const STATES = [self::STATE_FRESH, self::STATE_BLOCKED, self::STATE_ACTIVATED];
 
+	/** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
+	private int $id;
+
 	/** @ORM\Column(type="string", length=255, nullable=FALSE, unique=false) */
 	private string $name;
 
@@ -54,6 +58,10 @@ class User extends AbstractEntity
 	private string $role;
 
 	/**
+	 * @ORM\OneToMany(targetEntity="App\Entity\Order\Order", mappedBy="user", cascade={"persist"})
+	 */
+	private $orders;
+	/**
 	 * @var DateTime|NULL
 	 * @ORM\Column(type="datetime", nullable=TRUE)
 	 */
@@ -69,6 +77,45 @@ class User extends AbstractEntity
 
 		$this->role = self::ROLE_USER;
 		$this->state = self::STATE_FRESH;
+	}
+
+	public function getId(): int
+	{
+		return $this->id;
+	}
+
+	public function setId(int $id): void
+	{
+		$this->id = $id;
+	}
+	public function setName(string $name): void
+	{
+		$this->name = $name;
+	}
+
+	public function setSurname(string $surname): void
+	{
+		$this->surname = $surname;
+	}
+
+	public function setEmail(string $email): void
+	{
+		$this->email = $email;
+	}
+
+	public function setUsername(string $username): void
+	{
+		$this->username = $username;
+	}
+
+	public function setPassword(string $password): void
+	{
+		$this->password = $password;
+	}
+
+	public function setLastLoggedAt(?DateTime $lastLoggedAt): void
+	{
+		$this->lastLoggedAt = $lastLoggedAt;
 	}
 
 	public function changeLoggedAt(): void
@@ -177,8 +224,8 @@ class User extends AbstractEntity
 			'email' => $this->email,
 			'name' => $this->name,
 			'surname' => $this->surname,
-			'state' => $this->state,
-			'gravatar' => $this->getGravatar(),
+//			'state' => $this->state,
+//			'gravatar' => $this->getGravatar(),
 		]);
 	}
 

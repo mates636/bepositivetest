@@ -27,13 +27,16 @@ final class RouterFactory
 	protected function buildAdmin(): void
 	{
 		$this->router[] = $list = new RouteList('Admin');
-		$list->addRoute('admin/<presenter>/<action>[/<id>]', 'Home:default');
+		$list->addRoute('admin/<presenter>/<action>[/<id>]', 'Admin:default');
+		$list->addRoute('/sign', 'Sign:default');
+
 	}
 
 	protected function buildFront(): void
 	{
 		$this->router[] = $list = new RouteList('Front');
 		$list->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
+		$list->addRoute('/registration', 'Registration:default');
 	}
 
 	protected function buildMailing(): void

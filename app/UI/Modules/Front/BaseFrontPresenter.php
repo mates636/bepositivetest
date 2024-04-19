@@ -7,4 +7,5 @@ use App\UI\Modules\Base\UnsecuredPresenter;
 abstract class BaseFrontPresenter extends UnsecuredPresenter
 {
 
+
 }

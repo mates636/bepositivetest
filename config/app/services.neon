@@ -3,6 +3,10 @@
 services:
 	# Forms ===================
 	- App\UI\Form\FormFactory
+	- App\UI\Form\UserRegistrationForm
+	# Control =================
+	- App\UI\Control\ShowControl
+
 
 	# Latte ===================
 	latte.latteFactory:
@@ -41,3 +45,4 @@ services:
 latte:
 	macros:
 		- App\Model\Latte\Macros::register
+

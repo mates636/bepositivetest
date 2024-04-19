@@ -10,8 +10,8 @@ parameters:
 
 	# Database
 	database:
-		driver: pdo_pgsql
-		port: 5432
+		driver: pdo_mysql
+		port: 3306
 
 	# Project
 	project:
@@ -31,3 +31,5 @@ parameters:
 		host: localhost
 		username: fake
 		password: fake
+
+

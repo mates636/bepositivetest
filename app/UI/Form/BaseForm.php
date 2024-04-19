@@ -18,4 +18,9 @@ class BaseForm extends Form
 		return $input;
 	}
 
+	public function renderForm(): void
+	{
+
+	}
+
 }

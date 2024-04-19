@@ -2,70 +2,45 @@
 
 namespace App\UI\Modules\Admin\Sign;
 
-use App\Model\App;
-use App\Model\Exception\Runtime\AuthenticationException;
-use App\UI\Form\BaseForm;
-use App\UI\Form\FormFactory;
-use App\UI\Modules\Admin\BaseAdminPresenter;
+use App\Model\Security\Authenticator\UserAuthenticator;
+use App\Model\Security\SecurityUser;
+use App\Domain\User\User;
+use App\UI\Modules\Front\BaseFrontPresenter;
+use Nette\Application\UI\Form;
+use Nette\Security\AuthenticationException;
 
-final class SignPresenter extends BaseAdminPresenter
+final class SignPresenter extends BaseFrontPresenter
 {
+	private UserAuthenticator $userAuthenticator;
 
-	/** @var string @persistent */
-	public string $backlink;
-
-	/** @var FormFactory @inject */
-	public FormFactory $formFactory;
-
-	public function checkRequirements(mixed $element): void
+	public function __construct(UserAuthenticator $userAuthenticator)
 	{
-		// Disable auth
+		parent::__construct();
+		$this->userAuthenticator = $userAuthenticator;
 	}
 
-	public function actionIn(): void
+	protected function createComponentSignForm(): Form
 	{
-		if ($this->user->isLoggedIn()) {
-			$this->redirect(App::DESTINATION_AFTER_SIGN_IN);
-		}
-	}
-
-	public function actionOut(): void
-	{
-		if ($this->user->isLoggedIn()) {
-			$this->user->logout();
-			$this->flashSuccess('_front.sign.out.success');
-		}
-
-		$this->redirect(App::DESTINATION_AFTER_SIGN_OUT);
-	}
-
-	public function processLoginForm(BaseForm $form): void
-	{
-		try {
-			$this->user->setExpiration($form->values->remember ? '14 days' : '20 minutes');
-			$this->user->login($form->values->email, $form->values->password);
-		} catch (AuthenticationException $e) {
-			$form->addError('Invalid username or password');
-
-			return;
-		}
-
-		$this->redirect(App::DESTINATION_AFTER_SIGN_IN);
-	}
-
-	protected function createComponentLoginForm(): BaseForm
-	{
-		$form = $this->formFactory->forBackend();
-		$form->addEmail('email')
-			->setRequired(true);
-		$form->addPassword('password')
-			->setRequired(true);
-		$form->addCheckbox('remember')
-			->setDefaultValue(true);
-		$form->addSubmit('submit');
-		$form->onSuccess[] = [$this, 'processLoginForm'];
-
+		$form = new Form;
+		$form->addText('username', 'Username:');
+		$form->addPassword('password', 'Password:');
+		$form->addSubmit('send', 'Sign in');
+		$form->onSuccess[] = [$this, 'formSucceeded'];
 		return $form;
 	}
 
+
+	public function formSucceeded(Form $form, \stdClass $data): void
+	{
+		try {
+			$this->getUser()->login($data->username, $data->password);
+		} catch (Nette\Security\AuthenticationException $e) {
+			$form->addError('Nesprávné přihlašovací jméno nebo heslo.');
+		}
+		if ($this->getUser()->isInRole('admin')){
+			$this->redirect(':Admin:Home:Default');
+		} else {
+			$this->redirect(':Front:Home:Default');
+		}
+	}
 }

@@ -8,35 +8,67 @@ use App\Model\Database\Entity\TId;
 use App\Model\Database\Entity\TUpdatedAt;
 use App\Model\Exception\Logic\InvalidArgumentException;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Domain\User\User;
 use App\Domain\Product\Product;
 use App\Domain\Order\OrderRepository;
 
 
-#[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: "`order`")]
+/**
+ * @ORM\Entity(repositoryClass="App\Domain\Order\OrderRepository")
+ * @ORM\Table(name="`order`")
+ * @ORM\HasLifecycleCallbacks
+ */
 class Order extends AbstractEntity
 {
 	use TCreatedAt;
 	use TUpdatedAt;
-
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue
-	 * @ORM\Column(type="integer")
-	 */
-	private int $id;
+	use TId;
 
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="order")
+	 * @ORM\ManyToOne(targetEntity="App\Domain\User\User", inversedBy="order")
 	 */
-	private $user;
+	private int $users;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Product\Product", mappedBy="order")
+	 * @ORM\ManyToMany(targetEntity="App\Domain\Product\Product", inversedBy="orders")
+	 * @ORM\JoinTable(name="orders_products")
 	 */
-	private $products;
+	private Collection $products;
+
+	public function getUsers(): int
+	{
+		return $this->users;
+	}
+
+	public function setUsers(int $users): void
+	{
+		$this->users = $users;
+	}
+
+
+
+
+
+
+
+	public function getProducts(): Collection
+	{
+		return $this->products;
+	}
+
+	public function setProducts(Collection $products): void
+	{
+		$this->products = $products;
+	}
+
+	public function __construct()
+
+	{
+		$this->products = new ArrayCollection();
+	}
 
 }

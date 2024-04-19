@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace App\UI\Modules\Admin\Home;
+namespace App\UI\Modules\Admin\Product;
 
 use App\Domain\Order\Event\OrderCreated;
 use App\Domain\Order\Order;
@@ -11,9 +11,10 @@ use App\UI\Modules\Front\BaseFrontPresenter;
 use Doctrine\ORM\EntityManagerInterface;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Control;
+use Nette\Security\Passwords;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-final class HomePresenter extends BaseAdminPresenter
+final class ProductPresenter extends BaseAdminPresenter
 {
 
 	/** @var EventDispatcherInterface @inject */
@@ -27,25 +28,28 @@ final class HomePresenter extends BaseAdminPresenter
 		$this->em = $em;
 	}
 
-	protected function createComponentOrderForm(): Form
+	protected function createComponentProductForm(): Form
 	{
 		$form = new Form();
-		$form->addText('order', 'Order name')
+		$form->addText('name', 'name')
 			->setRequired(true);
-		$form->addSubmit('send', 'OK');
-
-		$form->onSuccess[] = function (Form $form): void {
-			$this->dispatcher->dispatch(new OrderCreated($form->values->order), OrderCreated::NAME);
-		};
+		$form->addInteger('price', 'price');
+		$form->addSubmit('send', 'Add');
+		$form->onSuccess[] = [$this, 'formSucceeded'];
 		return $form;
 	}
 
-//	public function renderDefault(): void
-//	{
-//		$orderRepository = $this->em->getRepository(Order::class);
-//		$orders = $orderRepository->findAll();
-//		$this->template->orders = $orders;
-//	}
+	public function formSucceeded(Form $form, \stdClass $values): void
+	{
+		$product = new Product($values->name, $values->price);
+		$product->setName($values->name);
+		$product->setPrice($values->price);
+
+		$em = $this->em;
+
+		$em->persist($product);
+		$em->flush();
+		$this->redirect("Product:default");
+	}
 
 }
-

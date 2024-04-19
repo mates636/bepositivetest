@@ -28,7 +28,8 @@ final class RouterFactory
 	{
 		$this->router[] = $list = new RouteList('Admin');
 		$list->addRoute('admin/<presenter>/<action>[/<id>]', 'Admin:default');
-		$list->addRoute('/sign', 'Sign:default');
+//		$list->addRoute('/sign', 'Sign:default');
+//		$list->addRoute('/sign', 'Sign:default');
 
 	}
 

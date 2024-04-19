@@ -8,6 +8,7 @@ use App\Model\Database\Entity\TId;
 use App\Model\Database\Entity\TUpdatedAt;
 use App\Model\Exception\Logic\InvalidArgumentException;
 use App\Model\Security\Identity;
+use Doctrine\Common\Collections\Collection;
 use App\Domain\Order\Order;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="`user`")
  * @ORM\HasLifecycleCallbacks
  */
-class User extends AbstractEntity
+class   User extends AbstractEntity
 {
 
 	use TId;
@@ -32,9 +33,6 @@ class User extends AbstractEntity
 	public const STATE_BLOCKED = 3;
 
 	public const STATES = [self::STATE_FRESH, self::STATE_BLOCKED, self::STATE_ACTIVATED];
-
-	/** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
-	private int $id;
 
 	/** @ORM\Column(type="string", length=255, nullable=FALSE, unique=false) */
 	private string $name;
@@ -58,9 +56,20 @@ class User extends AbstractEntity
 	private string $role;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Order\Order", mappedBy="user", cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="App\Domain\Order\Order", mappedBy="user")
 	 */
-	private $orders;
+	private Collection $orders;
+
+	public function getOrders(): Collection
+	{
+		return $this->orders;
+	}
+
+	public function setOrders(Collection $orders): void
+	{
+		$this->orders = $orders;
+	}
+
 	/**
 	 * @var DateTime|NULL
 	 * @ORM\Column(type="datetime", nullable=TRUE)

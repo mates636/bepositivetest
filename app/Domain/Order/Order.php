@@ -31,7 +31,7 @@ class Order extends AbstractEntity
 	/**
 	 * @ORM\ManyToOne(targetEntity="App\Domain\User\User", inversedBy="order")
 	 */
-	private int $users;
+	private User $user;
 
 	/**
 	 * @ORM\ManyToMany(targetEntity="App\Domain\Product\Product", inversedBy="orders")
@@ -39,14 +39,14 @@ class Order extends AbstractEntity
 	 */
 	private Collection $products;
 
-	public function getUsers(): int
+	public function getUser(): int
 	{
-		return $this->users;
+		return $this->user;
 	}
 
-	public function setUsers(int $users): void
+	public function setUser(User $user): void
 	{
-		$this->users = $users;
+		$this->user = $user;
 	}
 
 

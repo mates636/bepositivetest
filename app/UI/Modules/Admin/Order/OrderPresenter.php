@@ -8,6 +8,7 @@ use App\Domain\Product\Product;
 use App\Domain\User\User;
 use App\UI\Modules\Admin\BaseAdminPresenter;
 use App\UI\Modules\Front\BaseFrontPresenter;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Control;
@@ -49,8 +50,8 @@ final class OrderPresenter extends BaseAdminPresenter
 		$form->addSelect('user', 'User:', $userOptions)
 			->setPrompt('Select user');
 
-		$form->addSelect('products', 'Products:', $productOptions)
-			->setPrompt('Select products');
+		$form->addMultiSelect('products', 'Products:', $productOptions)
+			->setRequired('Select products');
 
 		$form->addSubmit('send', 'Add');
 
@@ -61,10 +62,24 @@ final class OrderPresenter extends BaseAdminPresenter
 
 	public function formSucceeded(Form $form, \stdClass $values): void
 	{
-//		dd($values->user);
+
 		$order = new Order();
-		$order->setUsers($values->user);
-		$order->setProducts($values->products);
+		$user = $this->em->getRepository(User::class)->find($values->user);
+		$order->setUser($user);
+//		$product = $this->em->getRepository(Product::class)->find($values->products);
+//		$products = new ArrayCollection([$product]);
+//		$order->setProducts($products);
+		$productIds = (array) $values->products;
+		$products = new ArrayCollection();
+
+		foreach ($productIds as $productId) {
+			$product = $this->em->getRepository(Product::class)->find($productId);
+			if ($product) {
+				$products->add($product);
+			}
+		}
+
+		$order->setProducts($products);
 
 		$em = $this->em;
 

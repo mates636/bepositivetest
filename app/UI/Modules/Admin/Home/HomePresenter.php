@@ -9,6 +9,7 @@ use App\Domain\User\User;
 use App\UI\Modules\Admin\BaseAdminPresenter;
 use App\UI\Modules\Front\BaseFrontPresenter;
 use Doctrine\ORM\EntityManagerInterface;
+use Nette\Application\UI\Component;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Control;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,25 +28,10 @@ final class HomePresenter extends BaseAdminPresenter
 		$this->em = $em;
 	}
 
-	protected function createComponentOrderForm(): Form
+	public function createComponentLogOut(): Component
 	{
-		$form = new Form();
-		$form->addText('order', 'Order name')
-			->setRequired(true);
-		$form->addSubmit('send', 'OK');
-
-		$form->onSuccess[] = function (Form $form): void {
-			$this->dispatcher->dispatch(new OrderCreated($form->values->order), OrderCreated::NAME);
-		};
-		return $form;
+		$this->user->logout();
+		$this->redirect('Sign:default');
 	}
-
-//	public function renderDefault(): void
-//	{
-//		$orderRepository = $this->em->getRepository(Order::class);
-//		$orders = $orderRepository->findAll();
-//		$this->template->orders = $orders;
-//	}
-
 }
 
